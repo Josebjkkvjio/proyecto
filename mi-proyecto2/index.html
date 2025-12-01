@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selenium Login Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            font-family: 'Courier New', monospace;
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        .hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        
+        .btn-danger:hover:not(:disabled) {
+            background: #d32f2f;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .progress-section {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .progress-section.show {
+            display: block;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-number.success {
+            color: #4caf50;
+        }
+        
+        .stat-number.error {
+            color: #f44336;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        
+        .log-container {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .log-entry {
+            margin: 5px 0;
+            padding: 3px 0;
+        }
+        
+        .log-success {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        
+        .log-error {
+            color: #f44336;
+        }
+        
+        .log-info {
+            color: #64b5f6;
+        }
+        
+        .log-time {
+            color: #888;
+        }
+        
+        .valid-credentials {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .valid-credentials.show {
+            display: block;
+        }
+        
+        .valid-credentials h3 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+        
+        .credential-item {
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .copy-btn:hover {
+            background: #218838;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+        
+        .status-running {
+            background: #4caf50;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .status-idle {
+            background: #9e9e9e;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .warning-box p {
+            color: #856404;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            Selenium Login Tester
+            <span class="status-indicator status-idle" id="statusIndicator"></span>
+        </h1>
+        <p class="subtitle">Prueba credenciales automaticamente con Selenium + Chrome</p>
+        
+        <div class="warning-box">
+            <h4>Uso Responsable</h4>
+            <p>Esta herramienta esta disenada para pruebas de seguridad autorizadas</p>
+            <p>Solo usa en sistemas donde tengas permiso explicito</p>
+        </div>
+
+        <div class="section">
+            <label for="targetUrl">URL del sitio a probar:</label>
+            <input type="text" id="targetUrl" placeholder="https://tu-sitio.com/login" value="">
+            <p class="hint">Ingresa la URL completa de la pagina de login</p>
+        </div>
+        
+        <div class="section">
+            <label for="credentials">Credenciales (formato: email:password):</label>
+            <textarea id="credentials" placeholder="usuario1@email.com:password123
+usuario2@email.com:pass456
+test@test.com:test123"></textarea>
+            <p class="hint">Una credencial por linea. Formato: usuario:contrasena</p>
+        </div>
+        
+        <div class="buttons">
+            <button class="btn-primary" id="startBtn" onclick="startTest()">Iniciar Test</button>
+            <button class="btn-danger" id="stopBtn" onclick="stopTest()" disabled>Detener</button>
+            <button class="btn-secondary" onclick="clearLogs()">Limpiar</button>
+        </div>
+        
+        <div class="progress-section" id="progressSection">
+            <h3>Progreso en Tiempo Real</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+            <p id="currentTest" style="text-align: center; color: #666; font-weight: 500;"></p>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCount">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="currentCount">0</div>
+                    <div class="stat-label">Probadas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number success" id="successCount">0</div>
+                    <div class="stat-label">Exitosas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number error" id="failedCount">0</div>
+                    <div class="stat-label">Fallidas</div>
+                </div>
+            </div>
+            
+            <div class="valid-credentials" id="validCredentials">
+                <h3>Credenciales Validas Encontradas:</h3>
+                <div id="validList"></div>
+            </div>
+            
+            <h3 style="margin-top: 20px;">Log en Tiempo Real:</h3>
+            <div class="log-container" id="logContainer">
+                <div class="log-entry log-info">
+                    <span class="log-time">[--:--:--]</span> Esperando inicio de test...
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let updateInterval = null;
+        
+        async function startTest() {
+            const targetUrl = document.getElementById('targetUrl').value.trim();
+            const credentials = document.getElementById('credentials').value.trim();
+            
+            if (!targetUrl) {
+                alert('Por favor ingresa una URL');
+                return;
+            }
+            
+            if (!credentials) {
+                alert('Por favor ingresa credenciales');
+                return;
+            }
+
+            try {
+                new URL(targetUrl);
+            } catch (e) {
+                alert('URL invalida. Debe empezar con http:// o https://');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/start', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        target_url: targetUrl, 
+                        credentials: credentials
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('startBtn').disabled = true;
+                    document.getElementById('stopBtn').disabled = false;
+                    document.getElementById('progressSection').classList.add('show');
+                    document.getElementById('statusIndicator').className = 'status-indicator status-running';
+                    
+                    updateInterval = setInterval(updateStatus, 1000);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error conectando al servidor: ' + error);
+                console.error(error);
+            }
+        }
+        
+        async function stopTest() {
+            try {
+                await fetch('/api/stop', {method: 'POST'});
+                document.getElementById('stopBtn').disabled = true;
+            } catch (error) {
+                console.error('Error deteniendo:', error);
+            }
+        }
+        
+        async function updateStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                const progress = data.total > 0 ? (data.progress / data.total * 100) : 0;
+                document.getElementById('progressFill').style.width = progress + '%';
+                document.getElementById('progressFill').textContent = Math.round(progress) + '%';
+                
+                document.getElementById('totalCount').textContent = data.total;
+                document.getElementById('currentCount').textContent = data.progress;
+                document.getElementById('successCount').textContent = data.results.success;
+                document.getElementById('failedCount').textContent = data.results.failed;
+                document.getElementById('currentTest').textContent = data.current ? 
+                    'Probando: ' + data.current : '';
+                
+                const logContainer = document.getElementById('logContainer');
+                logContainer.innerHTML = data.logs.map(log => 
+                    '<div class="log-entry log-' + log.type + '">' +
+                        '<span class="log-time">[' + log.time + ']</span> ' + log.message +
+                    '</div>'
+                ).join('');
+                logContainer.scrollTop = logContainer.scrollHeight;
+                
+                if (data.results.valid_credentials.length > 0) {
+                    const validDiv = document.getElementById('validCredentials');
+                    validDiv.classList.add('show');
+                    document.getElementById('validList').innerHTML = data.results.valid_credentials.map(cred =>
+                        '<div class="credential-item">' +
+                            '<span><strong>' + cred.username + '</strong> : ' + cred.password + '</span>' +
+                            '<button class="copy-btn" onclick="copyToClipboard(\'' + cred.username + ':' + cred.password + '\')">Copiar</button>' +
+                        '</div>'
+                    ).join('');
+                }
+                
+                if (!data.running && updateInterval) {
+                    clearInterval(updateInterval);
+                    updateInterval = null;
+                    document.getElementById('startBtn').disabled = false;
+                    document.getElementById('stopBtn').disabled = true;
+                    document.getElementById('statusIndicator').className = 'status-indicator status-idle';
+                }
+            } catch (error) {
+                console.error('Error actualizando:', error);
+            }
+        }
+        
+        async function clearLogs() {
+            try {
+                await fetch('/api/clear', {method: 'POST'});
+                document.getElementById('logContainer').innerHTML = 
+                    '<div class="log-entry log-info"><span class="log-time">[--:--:--]</span> Logs limpiados</div>';
+                document.getElementById('validCredentials').classList.remove('show');
+            } catch (error) {
+                console.error('Error limpiando:', error);
+            }
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copiado: ' + text);
+            }).catch(err => {
+                alert('Error al copiar');
+            });
+        }
+    </script>
+</body>
+</html>
